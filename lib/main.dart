@@ -47,6 +47,7 @@ class _ContainerHomePageState extends State<ContainerHomePage> {
 
   static const List<Widget> _pages = [
     MapPage(),
+
   ];
 
   @override
