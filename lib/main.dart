@@ -1,100 +1,208 @@
+import 'package:cargas/pages/Map.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'base.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const CargasApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class CargasApp extends StatelessWidget {
+  const CargasApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.green,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const ContainerHomePage(title: 'Cargas'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
+class ContainerHomePage extends StatefulWidget {
+  const ContainerHomePage({super.key, required this.title});
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<ContainerHomePage> createState() => _ContainerHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  GoogleMapController? mapController;
-  void _incrementCounter() {
+class _ContainerHomePageState extends State<ContainerHomePage> {
+  int _s = 0;
+  void setSelected(int s){
+    //maybe change the title / apply theme based on the selected page here
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _s = s;
     });
   }
 
   @override
+  void initState() {
+    super.initState();
+    setSelected(0);
+  }
+
+  static const List<Widget> _pages = [
+    MapPage(),
+  ];
+
+  @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
-      ),
-      body: GoogleMap( //Map widget from google_maps_flutter package
-        zoomGesturesEnabled: true, //enable Zoom in, out on map
-        initialCameraPosition: CameraPosition( //innital position in map
-          target: LatLng(0,0), //initial position
-          zoom: 10.0, //initial zoom level
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(15),
+            bottomRight: Radius.circular(15),
+          )
         ),
-        markers: Set(), //markers to show on map
-        mapType: MapType.normal, //map type
-        onMapCreated: (controller) { //method called when map is created
-          setState(() {
-            mapController = controller;
-          });
-        },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      body: _pages.length <= _s ? Center(child: Text("TODO (tab_index = $_s)"),) : _pages[_s],
+      drawer: Drawer(
+        child: ListView(
+          // Important: Remove any padding from the ListView.
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.lightGreen,
+              ),
+              child: Image(image: AssetImage("assests/images/cargas_logo_large.png")),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "Basic",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).primaryColorDark,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.map),
+              title: const Text('Map'),
+              selected: _s == 0,
+              onTap: () {
+                // Update the state of the app
+                setSelected(0);
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.announcement_outlined),
+              title: const Text('News'),
+              selected: _s == 1,
+              onTap: () {
+                // Update the state of the app
+                setSelected(1);
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+
+            ListTile(
+              leading: const Icon(Icons.account_circle_outlined),
+              title: const Text('Account'),
+              selected: _s == 2,
+              onTap: () {
+                // Update the state of the app
+                setSelected(2);
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+
+            Visibility(
+              visible: isLoggedIn(),
+              child: ListTile(
+                leading: const Icon(Icons.logout),
+                title: const Text('Logout'),
+                selected: _s == 7,
+                onTap: () {
+                  // Update the state of the app
+                  setSelected(7);
+                  // Then close the drawer
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            const Divider() ,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "Marketplace",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).primaryColorDark,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.shopping_bag_outlined),
+              title: const Text('Shop'),
+              selected: _s == 3,
+              onTap: () {
+                // Update the state of the app
+                setSelected(3);
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+            const Divider() ,
+
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "Support",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).primaryColorDark,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.chat_outlined),
+              title: const Text('Contact us'),
+              selected: _s == 4,
+              onTap: () {
+                // Update the state of the app
+                setSelected(4);
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.contact_support_outlined),
+              title: const Text('Q&A'),
+              selected: _s == 5,
+              onTap: () {
+                // Update the state of the app
+                setSelected(5);
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.info_outline),
+              title: const Text('About company'),
+              selected: _s == 6,
+              onTap: () {
+                // Update the state of the app
+                setSelected(6);
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
