@@ -1,4 +1,10 @@
+import 'package:cargas/ShopItem.dart';
+
 class CartItem{
-  int itemCode = -1; //shop item code
-  int quantity = -1; //the quantity bruh
+  ShopItem item; //shop item code
+  int quantity;
+  int ID;
+
+  CartItem({required this.item , required this.quantity , required this.ID}); //the quantity bruh
+
 }
