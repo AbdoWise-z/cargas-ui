@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:cargas/base.dart';
 import 'ThemedSearchTextField.dart';
 
+//fixme: issue related to Focus change , but I can't be bothered about it rn ...
+
 class ThemedSearchBar extends StatefulWidget {
 
   final void Function(String)? onSuggestionSelected;
