@@ -13,10 +13,10 @@ String googleMapsKey = "NULL";
 //Account info
 String? accountToken;
 int _accountType = -1; //not logged in
-String name = "Da we";
+String name = "Abdulrahman Mohammed Abdelfattah";
 String phoneNumber = "+201144503386";
-String address = "22 jump st";
-double balance = 0; //get rich bruh
+String address = "Address goes here";
+double balance = 1498; //get rich bruh
 
 const int ACCOUNT_TYPE_USER    = 0;
 const int ACCOUNT_TYPE_TRADER  = 1;
