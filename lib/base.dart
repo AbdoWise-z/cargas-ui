@@ -5,7 +5,7 @@ import 'package:cargas/Request.dart';
 import 'package:cargas/ShopItem.dart';
 import 'package:flutter/material.dart';
 
-
+String ServerAddress = "http://192.168.1.3:8080";
 //Google Maps
 String googleMapsKey = "NULL";
 //End - Google Maps

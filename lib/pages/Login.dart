@@ -5,7 +5,7 @@ import 'package:cargas/base.dart';
 import 'package:cargas/widget/LoadingCard.dart';
 import 'package:flutter/material.dart';
 
-// import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as http;
 // import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
@@ -24,14 +24,14 @@ class _LoginState extends State<Login> {
 
   String msg = "";
 
-  bool loghasNameError = false;
-  String logNameError = "";
+  bool loghasUserNameError = false;
+  String logUserNameError = "";
 
   bool loghasPassError = false;
   String logPassError = "";
 
-  bool reghasNameError = false;
-  String regNameError = "";
+  bool reghasUserNameError = false;
+  String regUserNameError = "";
 
   bool reghasPassError = false;
   String regPassError = "";
@@ -39,8 +39,17 @@ class _LoginState extends State<Login> {
   bool reghasEmailError = false;
   String regEmailError = "";
 
+  bool reghasNameError = false;
+  String regNameError = "";
+
+  bool reghasPhoneNumberError = false;
+  String regPhoneNumberError = "";
+
+  bool reghasAddressError = false;
+  String regAddressError = "";
+
   void doLogin(String user , String pass , bool rem) async{
-    loghasNameError = false;
+    loghasUserNameError = false;
     loghasPassError = false;
     user = user.trim();
     pass = pass.trim();
@@ -48,8 +57,8 @@ class _LoginState extends State<Login> {
     if (user.isEmpty){
       setState(() {
         page = LOGIN_PAGE;
-        loghasNameError = true;
-        logNameError = "Username cannot be empty";
+        loghasUserNameError = true;
+        logUserNameError = "Username cannot be empty";
       });
       return;
     }
@@ -57,8 +66,8 @@ class _LoginState extends State<Login> {
     if (user.contains(" ")){
       setState(() {
         page = LOGIN_PAGE;
-        loghasNameError = true;
-        logNameError = "username cannot have white spaces";
+        loghasUserNameError = true;
+        logUserNameError = "username cannot have white spaces";
       });
       return;
     }
@@ -83,105 +92,92 @@ class _LoginState extends State<Login> {
 
     loading = true;
     msg = "Logging in , please wait ..";
-    setState(() {
-    });
-    await Future.delayed(Duration(seconds: 2));
-    setState(() {
-      loading = false;
-      Navigator.pushReplacementNamed(context, '/home');
-    });
+    // setState(() {
+    // });
+    // await Future.delayed(Duration(seconds: 2));
+    // setState(() {
+    //   loading = false;
+    //   Navigator.pushReplacementNamed(context, '/home');
+    // });
 
 
     //TODO: Request to back-end for login authorization
-    //String url = "$ServerAddress/login";
-    //print("Running: $url");
+    String url = "$ServerAddress/login?user=$user&password=$pass";
+    print("Running: $url");
 
-    // try {
-    //
-    //   var res = await http.post(Uri.parse(url) ,
-    //     headers: {
-    //       "content-type" : "application/json",
-    //     },
-    //     body : jsonEncode({
-    //       "username" : user,
-    //       "password" : pass
-    //       //"email"    : "test_acc@gmail.com"
-    //     }).toString(),
-    //   );
-    //
-    //   print(res.body);
-    //
-    //   Map data = jsonDecode(res.body);
-    //
-    //   if (data["STATUS"] == 1){
-    //     SessionID = data["session_id"];
-    //
-    //     CurrentUser.Attr = data["user"]["admin"];
-    //     CurrentUser.ID = data["user"]["id"];
-    //     CurrentUser.name = user;
-    //
-    //     if (rem) {
-    //       final pref = await SharedPreferences.getInstance();
-    //       await pref.setString("SessionID", SessionID); //save the current "SessionID"
-    //     }
-    //
-    //     setState(() {
-    //       Navigator.pushReplacementNamed(context, "/anime/Home");
-    //     });
-    //
-    //     //Navigator.pushReplacementNamed(context, "/admin/enq_list"); //for debugging
-    //     return;
-    //   }else if (data["STATUS"] == 2) {
-    //     SessionID = data["session_id"];
-    //     CurrentUser.Attr = data["user"]["admin"];
-    //     CurrentUser.ID = data["user"]["id"];
-    //     CurrentUser.name = user;
-    //     setState(() {
-    //       Navigator.pushNamed(context, "/login/banned" , arguments: {"reason" : data["ban"]["ban_reason"]});
-    //     });
-    //     loading = false;
-    //     setState(() {});
-    //     return;
-    //   } else{
-    //     loading = false;
-    //     logPassError = "Wrong username or password.";
-    //     loghasPassError = true;
-    //     setState(() {});
-    //     return;
-    //   }
-    // }catch (e){
-    //   print(e);
-    //   loading = false;
-    //   logPassError = "Failed to connect to server.";
-    //   loghasPassError = true;
-    //   setState(() {});
-    //   return;
-    // }
+    try {
+
+      var res = await http.get(Uri.parse(url));
+
+      print(res.body);
+
+      Map data = jsonDecode(res.body);
+
+      if (data["result"] == 0){
+        accountToken = data["token"];
+
+        // CurrentUser.Attr = data["user"]["admin"];
+        // CurrentUser.ID = data["user"]["id"];
+        // CurrentUser.name = user;
+
+        // if (rem) {
+        //   final pref = await SharedPreferences.getInstance();
+        //   await pref.setString("SessionID", SessionID); //save the current "SessionID"
+        // }
+
+        setState(() {
+          Navigator.pushReplacementNamed(context, "/home");
+        });
+
+        return;
+      }
+      else{
+        loading = false;
+        logPassError = "Wrong username or password.";
+        loghasPassError = true;
+        setState(() {});
+        return;
+      }
+    }catch (e){
+      print(e);
+      loading = false;
+      logPassError = "Failed to connect to server.";
+      loghasPassError = true;
+      setState(() {});
+      return;
+    }
   }
 
-  void Register(String name , String pass , String email) async {
+  void Register(String username , String pass , String email, String name, String phoneNumber,String address) async {
     reghasPassError = false;
     reghasEmailError = false;
+    reghasUserNameError = false;
     reghasNameError = false;
+    reghasPhoneNumberError = false;
 
-    name = name.trim();
+    username = username.trim();
     pass = pass.trim();
     email = email.trim();
+    name = name.trim();
+    phoneNumber = phoneNumber.trim();
+    address = address.trim();
+    print("user: $username  pass: $pass  email: $email  name: $name  phone: $phoneNumber  address: $address");
 
-    if (name.isEmpty){
+    //TODO: validation for number,name
+    if (username.isEmpty){
       setState(() {
         page = REGISTER_PAGE;
-        reghasNameError = true;
-        regNameError = "Username cannot be empty";
+        reghasUserNameError = true;
+        regUserNameError = "Username cannot be empty";
       });
       return;
     }
 
-    if (name.contains(" ")){
+    if (username.contains(" ")){
       setState(() {
         page = REGISTER_PAGE;
-        reghasNameError = true;
-        regNameError = "username cannot have white spaces";
+        reghasUserNameError = true;
+        regUserNameError = "username cannot have white spaces";
       });
       return;
     }
@@ -231,62 +227,146 @@ class _LoginState extends State<Login> {
       return;
     }
 
+    if (name.isEmpty){
+      setState(() {
+        page = REGISTER_PAGE;
+        reghasNameError = true;
+        regNameError = "Name cannot be empty";
+      });
+      return;
+    }
+
+    if (name.length > 32){
+      setState(() {
+        page = REGISTER_PAGE;
+        reghasNameError = true;
+        regNameError = "Name cannot be larger than 32 characters";
+      });
+      return;
+    }
+
+    if(!RegExp(r'^[a-zA-Z\s]+$').hasMatch(name)){
+      setState(() {
+        page = REGISTER_PAGE;
+        reghasNameError = true;
+        regNameError = "Invalid Name";
+      });
+      return;
+    }
+
+    if (phoneNumber.isEmpty){
+      setState(() {
+        page = REGISTER_PAGE;
+        reghasPhoneNumberError = true;
+        regPhoneNumberError = "Phone Number cannot be empty";
+      });
+      return;
+    }
+
+    if(phoneNumber.length > 11 || !RegExp(r'^[0-9]+$').hasMatch(phoneNumber) || !phoneNumber.startsWith('0')){
+      setState(() {
+        page = REGISTER_PAGE;
+        reghasPhoneNumberError = true;
+        regPhoneNumberError = "invalid Phone Number";
+      });
+      return;
+    }
+
+    if (address.isEmpty){
+      setState(() {
+        page = REGISTER_PAGE;
+        reghasAddressError = true;
+        regAddressError = "Address cannot be empty";
+      });
+      return;
+    }
+
+
     loading = true;
     msg = "Creating account , please wait ..";
-    setState(() {
-    });
-    await Future.delayed(Duration(seconds: 2));
-    setState(() {
-      loading = false;
-      page = LOGIN_PAGE;
-    });
+    // setState(() {
+    // });
+    // await Future.delayed(Duration(seconds: 2));
+    // setState(() {
+    //   loading = false;
+    //   page = LOGIN_PAGE;
+    // });
 
 
     //TODO: Request to back-end for register authorization
-    //String url = "$ServerAddress/register";
-    //print("Running: $url");
+    String url = "$ServerAddress/register";
+    print("Running: $url");
 
-    // try {
-    //
-    //   var res = await http.post(Uri.parse(url) ,
-    //     body : jsonEncode({
-    //       "username" : name,
-    //       "password" : pass,
-    //       "email"    : email
-    //     }),
-    //     headers: {
-    //       "content-type" : "application/json",
-    //     },
-    //   );
-    //
-    //   print("here${res.body}");
-    //
-    //   Map data = jsonDecode(res.body);
-    //
-    //
-    //   if (data["status"] == 1){
-    //     doLogin(name, pass, false);
-    //   }else{
-    //     if (data["detail"].toString().contains("email")){
-    //       regEmailError = "this email is already used";
-    //       reghasEmailError = true;
-    //       loading = false;
-    //       setState(() {});
-    //     } else {
-    //       regNameError = "this username is already used";
-    //       reghasNameError = true;
-    //       loading = false;
-    //       setState(() {});
-    //     }
-    //   }
-    // }catch (e){
-    //   print(e);
-    //   loading = false;
-    //   regEmailError = "Failed to connect to server.";
-    //   reghasEmailError = true;
-    //   setState(() {});
-    //   return;
-    // }
+    try {
+
+      var res = await http.post(Uri.parse(url) ,
+        body : jsonEncode({
+          "username" : username,
+          "password" : pass,
+          "email"    : email,
+          "name" : name,
+          "phone_number" : phoneNumber,
+          "address" : address
+        }),
+      );
+
+      print(res.body);
+
+      Map data = jsonDecode(res.body);
+
+
+      if (data["result"] == 0){
+        doLogin(username, pass, false);
+      }else if(data["result"] == 3){
+        setState(() {
+          page = REGISTER_PAGE;
+          loading = false;
+          reghasUserNameError = true;
+          regUserNameError = "Username is used";
+        });
+      }else if(data["result"] == 2){
+        setState(() {
+          page = REGISTER_PAGE;
+          loading = false;
+          reghasPassError = true;
+          regPassError = "Password cannot be less than 8 characters";
+        });
+      }else if(data["result"] == 1){
+        setState(() {
+          page = REGISTER_PAGE;
+          loading = false;
+          reghasUserNameError = true;
+          regUserNameError = "Username cannot be less than 8 characters";
+        });
+      }else{
+        setState(() {
+          page = REGISTER_PAGE;
+          loading = false;
+          reghasAddressError = true;
+          regAddressError = "Couldn't create account, Please try again...";
+        });
+      }
+      //else{
+        // if (data["detail"].toString().contains("email")){
+        //   regEmailError = "this email is already used";
+        //   reghasEmailError = true;
+        //   loading = false;
+        //   setState(() {});
+        // } else {
+        //   regNameError = "this username is already used";
+        //   reghasNameError = true;
+        //   loading = false;
+        //   setState(() {});
+        // }
+        //}
+    }catch (e){
+      print(e);
+      loading = false;
+      regEmailError = "Failed to connect to server.";
+      reghasEmailError = true;
+      setState(() {});
+      return;
+    }
   }
 
 
@@ -366,9 +446,9 @@ class _LoginState extends State<Login> {
                 child: AbsorbPointer(
                   absorbing: loading,
                   child: LoginPage(
-                    UserError: logNameError,
+                    UserError: logUserNameError,
                     PasswordError: logPassError,
-                    hasUserError: loghasNameError,
+                    hasUserError: loghasUserNameError,
                     hasPasswordError: loghasPassError,
                         (String name , String pass , bool rem) { //login
                       doLogin(name, pass , rem);
@@ -386,15 +466,20 @@ class _LoginState extends State<Login> {
                 child: AbsorbPointer(
                   absorbing: loading,
                   child: RegisterPage(
-                      UserError: regNameError,
+                      UserError: regUserNameError,
                       PasswordError: regPassError,
-                      hasUserError: reghasNameError,
+                      hasUserError: reghasUserNameError,
                       hasPasswordError: reghasPassError,
                       EmailError: regEmailError,
                       hasEmailError: reghasEmailError,
-
-                          (String name , String pass , String email) { //login
-                        Register(name, pass , email);
+                      NameError: regNameError,
+                      hasNameError: reghasNameError,
+                      PhoneNumberError: regPhoneNumberError,
+                      hasPhoneNumberError: reghasPhoneNumberError,
+                      AddressError: regAddressError,
+                      hasAddressError: reghasAddressError,
+                          (String username , String pass , String email, String name, String phoneNumber, String address) { //login
+                        Register(username, pass , email , name , phoneNumber , address);
                       },
                           () {
                         setState(() {
