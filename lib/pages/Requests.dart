@@ -77,16 +77,16 @@ class _RequestsPageState extends State<RequestsPage> {
           }
 
           String dateStr = a["time"];
-          if (a["statues"] >= 4) {
+          if (a["status"] >= 4) {
             finishedRequests.add(
-              Request(state: a["statues"],
+              Request(state: a["status"],
                 requestCode: a["code"],
                 items: aa,
                 date: DateTime.parse(dateStr)),
             );
           } else {
             requests.add(
-              Request(state: a["statues"],
+              Request(state: a["status"],
                   requestCode: a["code"],
                   items: aa,
                   date: DateTime.parse(dateStr)),
