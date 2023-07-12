@@ -1,5 +1,4 @@
 import 'package:cargas/ShopItem.dart';
-import 'package:cargas/base.dart';
 import 'package:flutter/material.dart';
 
 class ShopItemWidget extends StatefulWidget {
@@ -114,11 +113,11 @@ class _ShopItemWidgetState extends State<ShopItemWidget> {
                               ),
                             ),
 
-                            Expanded(child: SizedBox()),
+                            const Expanded(child: SizedBox()),
 
                             Text(
                               widget.item.itemCode,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
                                 color: Colors.black54

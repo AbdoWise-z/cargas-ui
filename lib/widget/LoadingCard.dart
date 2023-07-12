@@ -14,20 +14,26 @@ class _LoadingCardState extends State<LoadingCard> {
   Widget build(BuildContext context) {
     return Card(
       elevation: 4,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          LoadingAnimationWidget.discreteCircle(color: Colors.black, size: 20),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 24, 12, 24),
-            child: Text(
-              widget.msg,
-              style: const TextStyle(
-                fontSize: 20,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            LoadingAnimationWidget.discreteCircle(color: Colors.black, size: 32),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(12, 24, 12, 24),
+                child: Text(
+                  widget.msg,
+                  softWrap: true,
+                  style: const TextStyle(
+                    fontSize: 20,
+                  ),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

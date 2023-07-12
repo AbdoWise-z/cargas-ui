@@ -1,19 +1,27 @@
 
-import 'package:cargas/CartItem.dart';
-import 'package:cargas/pages/Account.dart';
-import 'package:cargas/pages/Login.dart';
+import 'dart:convert';
 
+import 'package:cargas/ShopItem.dart';
+
+import 'package:cargas/pages/Account.dart';
+import 'package:cargas/pages/Requests.dart';
 import 'package:cargas/pages/Shop.dart';
 import 'package:cargas/pages/Map.dart';
+
 import 'package:cargas/widget/LoadingCard.dart';
 import 'base.dart';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
 
 class ContainerHomePage extends StatefulWidget {
 
   ContainerHomePage({super.key, required this.title});
   String title;
+  double appBarCurve = 30;
+  double appBarElevation = 6;
+  Color appBarColor = Colors.green;
 
   @override
   State<ContainerHomePage> createState() => _ContainerHomePageState();
@@ -24,11 +32,23 @@ class _ContainerHomePageState extends State<ContainerHomePage> {
   void setSelected(int s){
     //maybe change the title / apply theme based on the selected page here
     widget.title = "No title";
+    widget.appBarCurve = 30;
+    widget.appBarElevation = 6;
+    widget.appBarColor = Colors.green;
+
     if (s == 3){
       widget.title = "Shop";
+      widget.appBarCurve = 0;
     }
     if (s == 2){
       widget.title = "Account";
+      widget.appBarColor = Colors.transparent;
+      widget.appBarElevation = 0;
+    }
+
+    if (s == 8){
+      widget.title = "Requests";
+      widget.appBarCurve = 0;
     }
 
     setState(() {
@@ -57,6 +77,62 @@ class _ContainerHomePageState extends State<ContainerHomePage> {
 
     //TODO: load everything here
 
+    String shopUrl = "$ServerAddress/shop?token=$accountToken";
+    String profileUrl = '$ServerAddress/profile';
+
+    try {
+      shopItems.clear();
+      print("Running: $shopUrl");
+      var res = await http.get(Uri.parse(shopUrl));
+      print(res.body);
+
+      Map data = jsonDecode(res.body);
+      if (data["result"] == 0){
+        List l = data["shop"];
+        for (var a in l){
+          a = jsonDecode(a);
+          print(a);
+          shopItems.add(
+            ShopItem(
+              name: a["name"],
+              itemDisc: a["itemDisc"],
+              image: a["image"],
+              imageUrl: a["imageUrl"],
+              itemCode: a["itemCode"],
+              price: double.parse(a["price"].toString()),
+              itemType: a["itemType"],
+            ),
+          );
+        }
+
+        print("ShopSize = ${shopItems.length}");
+      } else {
+        print("SHOR ERROR !!!");
+      }
+
+      print("Running: $profileUrl");
+      res = await http.post(Uri.parse(profileUrl) ,
+        body : jsonEncode({
+          "token" : accountToken,
+        }),
+      );
+      print(res.body);
+
+      Map info = jsonDecode(res.body);
+      if (info["result"] == 0) {
+        Map profile = jsonDecode(info["info"]);
+        name = profile["name"];
+        phoneNumber = profile["phone"];
+        address = profile["address"];
+        balance = double.parse(profile["balance"].toString());
+      }else{
+        print("PROFILE ERROR !!!");
+      }
+
+    }catch (e){
+      print(e);
+    }
+
     setState(() {
       _loadingMessage = "Loading...";
       _loading = false;
@@ -67,14 +143,21 @@ class _ContainerHomePageState extends State<ContainerHomePage> {
   @override
   void initState() {
     super.initState();
+    loadData();
     setSelected(0);
   }
 
-  static List<Widget> _pages = [
+  static final List<Widget> _pages = [
     Text("map"), //map
     Text("Hmmmmmmmmmm"),
     AccountPage(),
     ShopPage(),
+    Text("Hmmmmmmmmmm"),
+    Text("Hmmmmmmmmmm"),
+    Text("Hmmmmmmmmmm"),
+    Text("Hmmmmmmmmmm"),
+    RequestsPage(),
+
   ];
 
   @override
@@ -83,13 +166,13 @@ class _ContainerHomePageState extends State<ContainerHomePage> {
       children:[
         Scaffold(
           appBar: AppBar(
-            backgroundColor: _selectedPage == 2? Colors.transparent : Colors.green,
-            elevation: _selectedPage == 2? 0 : 5,
+            backgroundColor: widget.appBarColor,
+            elevation: widget.appBarElevation,
             title: Text(widget.title),
-            shape: const RoundedRectangleBorder(
+            shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(15),
-                  bottomRight: Radius.circular(15),
+                  bottomLeft: Radius.circular(widget.appBarCurve),
+                  bottomRight: Radius.circular(widget.appBarCurve),
                 )
             ),
           ),
@@ -278,15 +361,3 @@ class _ContainerHomePageState extends State<ContainerHomePage> {
     );
   }
 }
-
-/*
-Visibility(
-            visible: _loading,
-            child: AbsorbPointer(
-              child: Center(child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: LoadingCard(msg: _loadingMessage),
-              )),
-            ),
-          ),
-* */

@@ -1,4 +1,5 @@
 import 'package:cargas/Home.dart';
+import 'package:cargas/pages/EditProfile.dart';
 import 'package:flutter/material.dart';
 import 'package:cargas/pages/Login.dart';
 
@@ -18,12 +19,12 @@ class CargasApp extends StatelessWidget {
       routes: {
         '/login' : (context) => const Login(),
         '/home' : (context) => ContainerHomePage(title: "CarGas"),
+        '/editProfile' : (context) => EditProfile(),
       },
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: ContainerHomePage(title: 'Cargas'),
     );
   }
 }

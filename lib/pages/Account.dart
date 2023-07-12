@@ -11,10 +11,13 @@ class InfoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FittedBox(
-      fit: BoxFit.scaleDown,
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
       child: Row(
         children: [
+
+          const Expanded(flex: 1, child: SizedBox(),),
+
           Card(
             elevation: 4,
             shape: const CircleBorder(),
@@ -37,8 +40,10 @@ class InfoTile extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 20,),
-          Column(
+
+          const Expanded(flex: 1, child: SizedBox(),),
+
+          Expanded(flex: 11, child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(type,
@@ -52,9 +57,11 @@ class InfoTile extends StatelessWidget {
                     color: Colors.black,
                     fontWeight: FontWeight.bold
                 ),
+                maxLines: 2,
               ),
             ],
-          ),
+          ),),
+          const Expanded(flex: 1, child: SizedBox(),),
         ],
       ),
     );
@@ -80,7 +87,7 @@ class _AccountPageState extends State<AccountPage> {
                   child: Transform.scale(
                     alignment: Alignment.bottomLeft,
                     scaleX: 1.2,
-                    scaleY: 1.18,
+                    scaleY: 1.3,
                     child: Container(
                       height: 250,
                       decoration: const BoxDecoration(
@@ -89,7 +96,8 @@ class _AccountPageState extends State<AccountPage> {
                           end: Alignment.bottomRight,
                           colors: [Colors.green, Colors.yellow],
                         ),
-                        borderRadius: BorderRadius.only(bottomLeft:Radius.elliptical(70, 100)),
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.elliptical(70, 100)),
                       ),
                     ),
                   )
@@ -105,7 +113,7 @@ class _AccountPageState extends State<AccountPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(280, 40, 30, 0),
+                padding: const EdgeInsets.fromLTRB(220, 40, 0, 0),
                 child: Container(
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
@@ -121,31 +129,60 @@ class _AccountPageState extends State<AccountPage> {
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
                         image: DecorationImage(
-                          image: AssetImage("assets/images/default_profile_green.png"),
+                          image: AssetImage(
+                              "assets/images/default_profile_green.png"),
                           fit: BoxFit.contain,
                         ),
                       ),
                     ),
                   ),
                 ),
-              )
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(340, 0, 0, 0),
+                child: IconButton(
+                  onPressed: ()async{
+                    await Navigator.pushNamed(context, '/editProfile');
+                    setState(() {});
+                  },
+                  icon: const Icon(Icons.edit),
+                  color: Colors.white,
+                  iconSize: 20,
+                ),
+              ),
             ],
           ),
           Container(
-            height: 300,
+            height: 400,
             width: 400,
             alignment: AlignmentDirectional.center,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                InfoTile(type: "Nick Name", info: name, iconColor: Colors.orange,icon: Icons.person_outline,),
+                InfoTile(
+                  type: "Nick Name",
+                  info: name,
+                  iconColor: Colors.orange,
+                  icon: Icons.person_outline,),
 
-                InfoTile(type: "Phone Number", info: phoneNumber, iconColor: Colors.blue,icon: Icons.phone,),
+                InfoTile(
+                  type: "Phone Number",
+                  info: phoneNumber,
+                  iconColor: Colors.blue,
+                  icon: Icons.phone,),
 
-                InfoTile(type: "Address", info: address, iconColor: Colors.pink,icon: Icons.apartment,),
+                InfoTile(
+                  type: "Address",
+                  info: address,
+                  iconColor: Colors.pink,
+                  icon: Icons.apartment,),
 
-                InfoTile(type: "Balance", info: "$balance\$", iconColor: Colors.green,icon: Icons.attach_money,),
+                InfoTile(
+                  type: "Balance",
+                  info: "$balance L.E.",
+                  iconColor: Colors.green,
+                  icon: Icons.attach_money,),
               ],
             ),
           )

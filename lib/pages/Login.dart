@@ -430,6 +430,9 @@ class _LoginState extends State<Login> {
   @override
   void initState() {
     super.initState();
+
+    //TODO: remove this
+    //doLogin("Osama1234", "Osama1234", false);
     //tryAutoLogin();
   }
 
